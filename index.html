@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقع سَكينة 🕊️ | دليل الخير الشامل</title>
+    
+    <style>
+        :root {
+            --main-blue: #1a2a6c;
+            --ramadan-gold: #fbc02d;
+            --soft-green: #2e7d32;
+            --red-crescent: #e63946;
+            --azhar-green: #006400;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
+            margin: 0;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            padding: 50px 20px;
+            border-bottom-left-radius: 60px;
+            border-bottom-right-radius: 60px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #countdown-container {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--main-blue);
+            display: inline-block;
+            padding: 15px 40px;
+            border-radius: 40px;
+            margin-top: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            text-align: right;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-right: 8px solid var(--ramadan-gold);
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+            background-color: #fffdf5;
+        }
+
+        .card h2 { margin-top: 0; color: var(--main-blue); font-size: 1.3rem; }
+        .tag { display: inline-block; background: #eee; padding: 3px 10px; border-radius: 10px; font-size: 0.8rem; margin-bottom: 10px; color: #777; }
+
+        /* ستايل النافذة المنبثقة (Modal) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 30px;
+            position: relative;
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-body p { line-height: 1.8; color: #444; }
+        .info-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 15px; }
+        
+        .btn-main {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            background: var(--soft-green);
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        footer { text-align: center; padding: 40px; color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>موقع سَكينة 🕊️</h1>
+        <p>قال رسول الله ﷺ: "أحب الناس إلى الله أنفعهم للناس"</p>
+        <div id="countdown-container">
+            🌙 متبقي على رمضان: <span id="days-count">--</span> يوم
+        </div>
+    </header>
+
+    <div class="container" id="cards-container">
+        </div>
+
+    <div id="charityModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modal-data">
+                </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>موقع سَكينة - نجمع لك طرق الخير في مكان واحد</p>
+        <p>© 2026 جميع الحقوق محفوظة</p>
+    </footer>
+
+    <script>
+        // قاعدة بيانات الجمعيات والمؤسسات
+        const charities = [
+            {
+                id: 1,
+                name: "الهلال الأحمر المصري 🌙",
+                tag: "إغاثة وطوارئ",
+                short: "الجهة الرائدة في الإغاثة العاجلة وتجهيز القوافل.",
+                desc: "تأسست عام 1911، تعمل كجهاز معاون للسلطات العامة في وقت السلم والحرب. تركز حالياً على إيصال المساعدات لغزة وتجهيز كراتين رمضان للأسر الحدودية والنائية.",
+                phone: "15322",
+                website: "https://www.egyptianredcrescent.org",
+                ways: "تبرع نقدي، تبرع بالدم، تطوع ميداني، فودافون كاش كود *9*166#"
+            },
+            {
+                id: 2,
+                name: "بيت الزكاة والصدقات 🕌",
+                tag: "إشراف الأزهر الشريف",
+                short: "صرف الزكاة في مصارفها الشرعية الثمانية.",
+                desc: "تحت إشراف فضيلة الإمام الأكبر شيخ الأزهر. يقوم بصرف مبالغ شهرية لآلاف الأسر الفقيرة، وبناء المنازل، وتوفير الأدوية للحالات الحرجة.",
+                phone: "15111",
+                website: "https://baitulzakat.org.eg",
+                ways: "تحصيل من المنازل، تبرع بنكي، رسالة نصية لـ 15111"
+            },
+            {
+                id: 3,
+                name: "بنك الطعام المصري 🥗",
+                tag: "أمن غذائي",
+                short: "المتخصص الأول في مكافحة الجوع في مصر.",
+                desc: "يقدم برامج غذائية مدروسة علمياً. في رمضان يطلق حملات (كرتونة الخير) وموائد الرحمن وتوزيع وجبات السحور.",
+                phone: "16060",
+                website: "https://www.efb.eg",
+                ways: "كرتونة رمضان (أحجام مختلفة)، سهم إفطار صائم، فوري كود 111"
+            },
+            {
+                id: 4,
+                name: "مؤسسة مصر الخير 🤝",
+                tag: "تنمية شاملة",
+                short: "فك كرب الغارمين ودعم الصحة والتعليم.",
+                desc: "تستهدف الإنسان وتنميته في 5 مجالات أساسية. تعتبر من أكبر المؤسسات التي تساهم في إخراج الغارمين من السجون قبل العيد.",
+                phone: "16140",
+                website: "https://mekeg.org",
+                ways: "سهم فك كرب، كرتونة رمضان، زكاة مال، صدقة جارية"
+            },
+            {
+                id: 5,
+                name: "جمعية رسالة ✋",
+                tag: "عمل تطوعي",
+                short: "أكبر صرح للتطوع الشبابي في الوطن العربي.",
+                desc: "تمتلك أكثر من 60 فرعاً. تشمل أنشطتها كساء، إطعام، رعاية أيتام، محو أمية، وزيارة دور المسنين.",
+                phone: "19287",
+                website: "https://resala.org",
+                ways: "تبرع بالملابس المستعملة، تبرع نقدي، تطوع بالوقت"
+            },
+            {
+                id: 6,
+                name: "مؤسسة مرسال 🏥",
+                tag: "رعاية طبية",
+                short: "علاج الحالات الطبية الصعبة لغير القادرين.",
+                desc: "مؤسسة خيرية غير هادفة للربح تعمل في مجال الصحة، تسعى لتوفير الرعاية الطبية الشاملة بجودة عالية لكل من يحتاجها.",
+                phone: "19340",
+                website: "https://mersal-ngo.org",
+                ways: "كفالة روشتة، عمليات جراحية، حضانات أطفال"
+            },
+            {
+                id: 7,
+                name: "جمعية الأورمان 🐑",
+                tag: "مشاريع تنموية",
+                short: "كفالة اليتيم وتنمية القرى الأكثر احتياجاً.",
+                desc: "مشهورة بمشاريع كشك الأورمان، وتوزيع رؤوس الماشية، وتجهيز العرائس اليتيمات، وعمليات القلب والعيون بالمجان.",
+                phone: "19455",
+                website: "https://www.dar-alorman.com",
+                ways: "سهم لحوم، كفالة يتيم، كرتونة رمضان"
+            },
+            {
+                id: 8,
+                name: "مؤسسة مجدي يعقوب 🫀",
+                tag: "صحة القلب",
+                short: "علاج قلوب الأطفال بالمجان تماماً.",
+                desc: "مركز أسوان للقلب يقدم أحدث الخدمات الطبية العالمية لغير القادرين، وتعتبر من أهم وجهات الصدقة الجارية في مصر.",
+                phone: "19731",
+                website: "https://myf-egypt.org",
+                ways: "سهم عمليات قلب، صدقة جارية، تبرع شهري"
+            },
+            {
+                id: 9,
+                name: "مستشفى 57357 🎗️",
+                tag: "سرطان الأطفال",
+                short: "أكبر مستشفى لعلاج سرطان الأطفال في العالم.",
+                desc: "يقدم رعاية طبية متكاملة للأطفال المصابين بالسرطان مجاناً، ويعتمد كلياً على التبرعات لضمان استمرار العلاج والبحث العلمي.",
+                phone: "19057",
+                website: "https://57357.org",
+                ways: "صدقة جارية، تسمية سرير، زكاة مال"
+            }
+        ];
+
+        // عرض الكروت في الصفحة
+        const container = document.getElementById('cards-container');
+        charities.forEach(charity => {
+            const card = document.createElement('div');
+            card.className = `card ${charity.id === 1 ? 'red-crescent' : (charity.id === 2 ? 'azhar' : '')}`;
+            card.onclick = () => openModal(charity);
+            card.innerHTML = `
+                <div>
+                    <span class="tag">${charity.tag}</span>
+                    <h2>${charity.name}</h2>
+                    <p>${charity.short}</p>
+                    <span style="color:var(--soft-green); font-weight:bold; font-size:0.8rem;"> اضغط للتفاصيل ⬅️</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // وظائف النافذة المنبثقة
+        function openModal(charity) {
+            const modal = document.getElementById('charityModal');
+            const dataContainer = document.getElementById('modal-data');
+            
+            dataContainer.innerHTML = `
+                <div class="modal-header">
+                    <h2>${charity.name}</h2>
+                    <span class="tag">${charity.tag}</span>
+                </div>
+                <div class="modal-body">
+                    <p><strong>عن المؤسسة:</strong> ${charity.desc}</p>
+                    <div class="info-row">📞 <strong>الخط الساخن:</strong> ${charity.phone}</div>
+                    <div class="info-row">💳 <strong>طرق التبرع:</strong> ${charity.ways}</div>
+                </div>
+                <a href="tel:${charity.phone}" class="btn-main">اتصل للتبرع الآن</a>
+                <a href="${charity.website}" target="_blank" style="display:block; text-align:center; margin-top:15px; color:#666; font-size:0.9rem;">زيارة الموقع الإلكتروني</a>
+            `;
+            
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('charityModal').style.display = "none";
+        }
+
+        // إغلاق المودال عند الضغط خارجه
+        window.onclick = function(event) {
+            const modal = document.getElementById('charityModal');
+            if (event.target == modal) closeModal();
+        }
+
+        // العداد التنازلي
+        function updateCountdown() {
+            const ramadanDate = new Date('February 18, 2026 00:00:00').getTime();
+            const now = new Date().getTime();
+            const diff = ramadanDate - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('days-count').innerText = days > 0 ? days : 0;
+        }
+        updateCountdown();
+    </script>
+</body>
+</html>
